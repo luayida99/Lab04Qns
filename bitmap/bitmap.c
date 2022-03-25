@@ -76,6 +76,10 @@ void set_map(unsigned char *map, long start, long length, int value) {
             map[arr_idx] |= 1 << 7-start_idx;
         }
         start_idx++;
+        if (start_idx == 8) {
+            start_idx = 0;
+            arr_idx++;
+        }
         length--;
     } 
 }
