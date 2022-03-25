@@ -67,6 +67,17 @@ long search_map(unsigned char *bitmap, int len, long num_zeroes) {
 // Returns: Nothing
 
 void set_map(unsigned char *map, long start, long length, int value) {
+    long arr_idx = start/8;
+    long start_idx = start%8;
+    while (length>0) {
+        if (!value) {
+            map[arr_idx] &= ~(1 << 7-start_idx);
+        } else {
+            map[arr_idx] |= 1 << 7-start_idx;
+        }
+        start_idx++;
+        length--;
+    } 
 }
 
 // IMPLEMENTED FOR YOU
