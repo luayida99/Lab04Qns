@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mymalloc.h"
+#include "bitmap.h"
 
 char _heap[MEMSIZE] = {0};
 
@@ -15,6 +16,7 @@ long get_index(void *ptr) {
 
 void print_memlist() {
     // Implement this to call print_map from bitmap.c
+    print_map(_heap, MEMSIZE/8);
 }
 
 // Allocates size bytes of memory and returns a pointer
