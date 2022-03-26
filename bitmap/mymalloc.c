@@ -23,10 +23,15 @@ void print_memlist() {
 // to the first byte.
 void *mymalloc(size_t size) {
     int idx = search_map(_heap,MEMSIZE/8,size);
-    allocate_map(_heap, idx, size);
+    printf("Index:%d\n", idx);
+    if (idx>=0) {
+        allocate_map(_heap, idx, size);
+        printf("Address: %p\n", &_heap[idx]);
+        return &_heap[idx];//check, idk???
+    }
+    return NULL;
 }
 
 // Frees memory pointer to by ptr.
 void myfree(void *ptr) {
 }
-
