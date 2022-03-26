@@ -44,12 +44,12 @@ long search_map(unsigned char *bitmap, int len, long num_zeroes) {
         unsigned char mask = 0b10000000;
         for (int j=0;j<8;j++) {
             if (bitmap[i] & mask) { //1
-                res = j + i*8;
+                res = j + i*8 + 1;
                 consec = 0;
             } else { //0
                 consec++;
                 if (consec == num_zeroes) {
-                    return res + 1;
+                    return res;
                 }
             }
             mask = mask >> 1;

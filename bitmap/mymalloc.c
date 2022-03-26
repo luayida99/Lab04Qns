@@ -22,7 +22,8 @@ void print_memlist() {
 // Allocates size bytes of memory and returns a pointer
 // to the first byte.
 void *mymalloc(size_t size) {
-    return NULL;
+    int idx = search_map(_heap,MEMSIZE/8,size);
+    allocate_map(_heap, idx, size);
 }
 
 // Frees memory pointer to by ptr.
