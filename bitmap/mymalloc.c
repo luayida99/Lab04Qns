@@ -26,10 +26,13 @@ void print_memlist() {
 void *mymalloc(size_t size) {
     int idx = search_map(_heap,MEMSIZE/8,size);
     TData td = {.len = size}; // length data
+    printf("Length of data: %zu\n", td.len);
     if (idx>=0) {
         allocate_map(_heap, idx, size);
-        TNode *tn = make_node((unsigned int) &_heap[idx], &td);
+        TNode *tn = make_node((unsigned int) idx, &td);
         insert_node(&_memlist, tn, 0);
+        printf("Pointer:%p\n", &_heap[idx]);
+        printf("Index:%d\nn", idx);
         return &_heap[idx];//check, idk???
     }
     return NULL;
@@ -42,14 +45,9 @@ void myfree(void *ptr) {
     printf("Index:%ld\n",idx);
     if (idx>=0) {
         TNode *tn = find_node(_memlist, (unsigned int) idx);
-        printf("%p", tn);
-        if (tn == NULL) {
-            printf("I fked up\n");
-        }
-        int length = 4;
-        // int length = tn->pdata->len;
-        // free(tn->pdata);
-        // delete_node(&_memlist, tn);
+        size_t length = tn->pdata->len;
+        printf("Length of data: %zu\n", length);
+        delete_node(&_memlist, tn);
         free_map(_heap, get_index(ptr), length);//how get size to free??
     }
 }
