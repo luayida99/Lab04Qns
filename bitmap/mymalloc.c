@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include "mymalloc.h"
 #include "bitmap.h"
+#include "llist.h"
 
 char _heap[MEMSIZE] = {0};
+TNode *_memlist = NULL; // To maintain information about length
 
 // Do not change this. Used by the test harness.
 // You may however use this function in your code if necessary.
@@ -23,8 +25,11 @@ void print_memlist() {
 // to the first byte.
 void *mymalloc(size_t size) {
     int idx = search_map(_heap,MEMSIZE/8,size);
+    TData td = {.len = size}; // length data
     if (idx>=0) {
         allocate_map(_heap, idx, size);
+        TNode *tn = make_node((unsigned int) &_heap[idx], &td);
+        insert_node(&_memlist, tn, 0);
         return &_heap[idx];//check, idk???
     }
     return NULL;
@@ -36,6 +41,15 @@ void myfree(void *ptr) {
     printf("Pointer:%p\n",ptr);
     printf("Index:%ld\n",idx);
     if (idx>=0) {
-        free_map(_heap, get_index(ptr), 4);//how get size to free??
+        TNode *tn = find_node(_memlist, (unsigned int) idx);
+        printf("%p", tn);
+        if (tn == NULL) {
+            printf("I fked up\n");
+        }
+        int length = 4;
+        // int length = tn->pdata->len;
+        // free(tn->pdata);
+        // delete_node(&_memlist, tn);
+        free_map(_heap, get_index(ptr), length);//how get size to free??
     }
 }
