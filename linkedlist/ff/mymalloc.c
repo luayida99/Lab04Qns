@@ -16,17 +16,13 @@ TNode *_memlist = NULL; // To maintain information about length
 
 void print_memlist() {
     //sth wrong try running
+    reset_traverser(_memlist, 0);
     TNode *currNode = _memlist;
-    while (currNode != NULL) {
-        if (currNode->key == 0) {
-            currNode = succ(currNode);
-            continue;
-        }
+    while (succ(currNode) != NULL) {
         printf("Status: ALLOCATED Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
         currNode = succ(currNode);
     }
-    printf("Status: FREE Start index:%d Length:%d\n", 22, 345);
-    reset_traverser(_memlist, 0);
+    printf("Status: FREE Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
 }
 
 // void insertNodeToLinkedList(size_t length, bool occupied, int startingAddress) {
@@ -53,6 +49,7 @@ void *mymalloc(size_t size) {
         TNode *tn = make_node((unsigned int) 0, startingData);
         insert_node(&_memlist, tn, 0);
     }
+    reset_traverser(_memlist, 0);
     bool isFound = false;
     TNode *currNode = _memlist;
     TData *td = NULL;
@@ -68,6 +65,7 @@ void *mymalloc(size_t size) {
         // delete node
         size_t remainingSize = td->val - size;
         int startAddress = currNode->key;
+        printf("Current Node - Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
         free(td);
         delete_node(&_memlist, currNode);
 
@@ -84,6 +82,11 @@ void *mymalloc(size_t size) {
         int secondStartAddress = startAddress + size;
         TNode *secondNode = make_node((unsigned int) secondStartAddress, secondData);
         insert_node(&_memlist, secondNode, 0);
+
+        printf("Allocated Address: %d\n", startAddress);
+        printf("Next Address: %d\n", secondStartAddress);
+        printf("First Node - Start index:%d Length:%d\n", firstNode->key, firstNode->pdata->val);
+        printf("Second Node - Start index:%d Length:%d\n", secondNode->key, secondNode->pdata->val);
     }
 }
 
