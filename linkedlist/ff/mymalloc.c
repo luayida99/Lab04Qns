@@ -18,16 +18,14 @@ void print_memlist() {
     //sth wrong try running
     reset_traverser(_memlist, 0);
     TNode *currNode = _memlist;
-    while (succ(currNode) != NULL) {
+    int length = 0;
+    while (currNode->next != NULL) {
         printf("Status: ALLOCATED Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
-        currNode = succ(currNode);
+        currNode = currNode->next;
+        length++;
     }
     printf("Status: FREE Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
 }
-
-// void insertNodeToLinkedList(size_t length, bool occupied, int startingAddress) {
-    // abstract out creation of node, but low priority (only for cosmetic purposes)
-// }
 
 // Do not change this. Used by the test harness.
 // You may however use this function in your code if necessary.
@@ -59,38 +57,37 @@ void *mymalloc(size_t size) {
             isFound = true;
             break;
         }
-        currNode = succ(currNode);
+        currNode = currNode->next;
     }
     if (isFound == true) {
-        // delete node
+        // mutate node
         size_t remainingSize = td->val - size;
-        int startAddress = currNode->key;
-        printf("Current Node - Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
-        free(td);
-        delete_node(&_memlist, currNode);
+        // printf("Current Node - Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
+        currNode->pdata->val = size;
+        currNode->pdata->isOccupied = true;
 
         // split node and insert
-        TData *firstData = (TData*) malloc(sizeof(TData));
-        firstData->val = size;
-        firstData->isOccupied = true;
-        TNode *firstNode = make_node((unsigned int) startAddress, firstData);
-        insert_node(&_memlist, firstNode, 0);
+        TData *nextData = (TData*) malloc(sizeof(TData));
+        nextData->val = remainingSize;
+        nextData->isOccupied = false;
+        int nextAddress = currNode->key + size;
+        TNode *nextNode = make_node((unsigned int) nextAddress, nextData);
+        reset_traverser(_memlist, 0);
+        insert_node(&_memlist, nextNode, 0);
 
-        TData *secondData = (TData*) malloc(sizeof(TData));
-        secondData->val = remainingSize;
-        secondData->isOccupied = false;
-        int secondStartAddress = startAddress + size;
-        TNode *secondNode = make_node((unsigned int) secondStartAddress, secondData);
-        insert_node(&_memlist, secondNode, 0);
-
-        printf("Allocated Address: %d\n", startAddress);
-        printf("Next Address: %d\n", secondStartAddress);
-        printf("First Node - Start index:%d Length:%d\n", firstNode->key, firstNode->pdata->val);
-        printf("Second Node - Start index:%d Length:%d\n", secondNode->key, secondNode->pdata->val);
+        // printf("Next Address: %d\n", nextAddress);
+        // printf("======================================\n");
+        // printf("First Node - Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
+        // printf("First node memory address: %p\n", currNode);
+        // printf("======================================\n");
+        // printf("Second Node - Start index:%d Length:%d\n", nextNode->key, nextNode->pdata->val);
+        // printf("Second node memory address: %p\n", nextNode);
+        // printf("======================================\n");
     }
 }
 
 // Frees memory pointer to by ptr.
 void myfree(void *ptr) {
+    
 }
 
