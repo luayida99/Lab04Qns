@@ -30,7 +30,7 @@ void *mymalloc(size_t size) {
     if (idx>=0) {
         allocate_map(_heap, idx, size);
         TNode *tn = make_node((unsigned int) idx, td);
-        insert_node(&_memlist, tn, 0););
+        insert_node(&_memlist, tn, 0);
         return &_heap[idx];
     }
     return NULL;
