@@ -8,12 +8,26 @@ char _heap[MEMSIZE] = {0};
 TNode *_memlist = NULL; // To maintain information about length
 
 // setting up first node in LinkedList
-TData *startingData = (TData*) malloc(sizeof(TData));
-startingData->val = MEMSIZE;
-startingData->isOccupied = false;
-TNode *tn = make_node((unsigned int) 0, startingData);
-insert_node(&_memlist, tn, 0);
+//TData *startingData = (TData*) malloc(sizeof(TData));
+//startingData->val = MEMSIZE;
+//startingData->isOccupied = false;
+//TNode *tn = make_node((unsigned int) 0, startingData);
+//insert_node(&_memlist, tn, 0);
 
+void print_memlist() {
+    //sth wrong try running
+    TNode *currNode = _memlist;
+    while (currNode != NULL) {
+        if (currNode->key == 0) {
+            currNode = succ(currNode);
+            continue;
+        }
+        printf("Status: ALLOCATED Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
+        currNode = succ(currNode);
+    }
+    printf("Status: FREE Start index:%d Length:%d\n", 22, 345);
+    reset_traverser(_memlist, 0);
+}
 
 // void insertNodeToLinkedList(size_t length, bool occupied, int startingAddress) {
     // abstract out creation of node, but low priority (only for cosmetic purposes)
@@ -31,6 +45,14 @@ long get_index(void *ptr) {
 // Allocates size bytes of memory and returns a pointer
 // to the first byte.
 void *mymalloc(size_t size) {
+    if (_memlist == NULL) {
+        //check if memlist not instantiated and add starting node
+        TData *startingData = (TData*) malloc(sizeof(TData));
+        startingData->val = MEMSIZE;
+        startingData->isOccupied = false;
+        TNode *tn = make_node((unsigned int) 0, startingData);
+        insert_node(&_memlist, tn, 0);
+    }
     bool isFound = false;
     TNode *currNode = _memlist;
     TData *td = NULL;
