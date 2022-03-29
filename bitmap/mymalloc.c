@@ -25,14 +25,16 @@ void print_memlist() {
 // to the first byte.
 void *mymalloc(size_t size) {
     int idx = search_map(_heap,MEMSIZE/8,size);
-    TData td = {.len = size}; // length data
-    printf("Length of data: %zu\n", td.len);
+    TData *td = (TData*) malloc(sizeof(TData));
+    td->len = size; // length data
+    printf("Length of data: %zu\n", td->len);
     if (idx>=0) {
         allocate_map(_heap, idx, size);
-        TNode *tn = make_node((unsigned int) idx, &td);
+        TNode *tn = make_node((unsigned int) idx, td);
+        printf("TData memory address: %p\n", tn->pdata);
         insert_node(&_memlist, tn, 0);
         printf("Pointer:%p\n", &_heap[idx]);
-        printf("Index:%d\nn", idx);
+        printf("Index:%d\n", idx);
         return &_heap[idx];//check, idk???
     }
     return NULL;
@@ -47,6 +49,7 @@ void myfree(void *ptr) {
         TNode *tn = find_node(_memlist, (unsigned int) idx);
         size_t length = tn->pdata->len;
         printf("Length of data: %zu\n", length);
+        free(tn->pdata);
         delete_node(&_memlist, tn);
         free_map(_heap, get_index(ptr), length);//how get size to free??
     }
