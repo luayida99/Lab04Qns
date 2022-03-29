@@ -24,7 +24,7 @@ void print_memlist() {
 // Allocates size bytes of memory and returns a pointer
 // to the first byte.
 void *mymalloc(size_t size) {
-    int idx = search_map(_heap,MEMSIZE/8,size);
+    long idx = search_map(_heap,MEMSIZE/8,size);
     TData *td = (TData*) malloc(sizeof(TData));
     td->len = size;
     if (idx>=0) {
