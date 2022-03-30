@@ -7,24 +7,18 @@
 char _heap[MEMSIZE] = {0};
 TNode *_memlist = NULL; // To maintain information about length
 
-// setting up first node in LinkedList
-//TData *startingData = (TData*) malloc(sizeof(TData));
-//startingData->val = MEMSIZE;
-//startingData->isOccupied = false;
-//TNode *tn = make_node((unsigned int) 0, startingData);
-//insert_node(&_memlist, tn, 0);
-
 void print_memlist() {
-    //sth wrong try running
     reset_traverser(_memlist, 0);
     TNode *currNode = _memlist;
-    int length = 0;
-    while (currNode->next != NULL) {
-        printf("Status: ALLOCATED Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
+    while (currNode != NULL) {
+        if (currNode->pdata->isOccupied) {
+            printf("Status: ALLOCATED Start index: %d Length: %d\n", currNode->key, currNode->pdata->val);
+        } else {
+            printf("Status: FREE Start index: %d Length: %d\n", currNode->key, currNode->pdata->val);
+        }
         currNode = currNode->next;
-        length++;
     }
-    printf("Status: FREE Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
+    
 }
 
 // Do not change this. Used by the test harness.
@@ -60,6 +54,7 @@ void *mymalloc(size_t size) {
         currNode = currNode->next;
     }
     if (isFound == true) {
+        int startingAddress = currNode->key;
         // mutate node
         size_t remainingSize = td->val - size;
         // printf("Current Node - Start index:%d Length:%d\n", currNode->key, currNode->pdata->val);
@@ -67,13 +62,17 @@ void *mymalloc(size_t size) {
         currNode->pdata->isOccupied = true;
 
         // split node and insert
-        TData *nextData = (TData*) malloc(sizeof(TData));
-        nextData->val = remainingSize;
-        nextData->isOccupied = false;
-        int nextAddress = currNode->key + size;
-        TNode *nextNode = make_node((unsigned int) nextAddress, nextData);
-        reset_traverser(_memlist, 0);
-        insert_node(&_memlist, nextNode, 0);
+        if (remainingSize != 0) {
+            TData *nextData = (TData*) malloc(sizeof(TData));
+            nextData->val = remainingSize;
+            nextData->isOccupied = false;
+            int nextAddress = currNode->key + size;
+            TNode *nextNode = make_node((unsigned int) nextAddress, nextData);
+            reset_traverser(_memlist, 0);
+            insert_node(&_memlist, nextNode, 0);
+        }
+
+        return &_heap[startingAddress];
 
         // printf("Next Address: %d\n", nextAddress);
         // printf("======================================\n");
@@ -84,10 +83,32 @@ void *mymalloc(size_t size) {
         // printf("Second node memory address: %p\n", nextNode);
         // printf("======================================\n");
     }
+    return NULL;
 }
 
 // Frees memory pointer to by ptr.
 void myfree(void *ptr) {
-    
+    long idx = get_index(ptr);
+    if (idx>=0) {
+        // unassign node
+        TNode *currNode = find_node(_memlist, (unsigned int) idx);
+
+        if (currNode != NULL) {
+            currNode->pdata->isOccupied = false;
+
+            // merge nodes
+            if (currNode->next != NULL && currNode->next->pdata->isOccupied == false) {
+                currNode->pdata->val = currNode->pdata->val + currNode->next->pdata->val;
+                free(currNode->next->pdata);
+                merge_node(_memlist, currNode, 1);
+            }
+
+            if (currNode->prev != NULL && currNode->prev->pdata->isOccupied == false) {
+                currNode->prev->pdata->val = currNode->pdata->val + currNode->prev->pdata->val;
+                free(currNode->pdata);
+                merge_node(_memlist, currNode, 0);
+            }
+        }
+    }
 }
 
