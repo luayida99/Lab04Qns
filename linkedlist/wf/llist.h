@@ -1,3 +1,4 @@
+#include <stdbool.h>
 
 // Uncomment the next line to enable debug printing
 #define DEBUG       // Enable debug printing
@@ -14,6 +15,7 @@ void dbprintf(char *format, ...);
 
 typedef struct td {
     int val;
+    bool isOccupied;
 } TData;
 
 
